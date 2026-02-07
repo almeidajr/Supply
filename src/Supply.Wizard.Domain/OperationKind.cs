@@ -5,7 +5,18 @@ namespace Supply.Wizard.Domain;
 /// </summary>
 public enum OperationKind
 {
+    /// <summary>
+    /// Indicates install.
+    /// </summary>
     Install,
+
+    /// <summary>
+    /// Indicates update.
+    /// </summary>
     Update,
+
+    /// <summary>
+    /// Indicates uninstall.
+    /// </summary>
     Uninstall,
 }

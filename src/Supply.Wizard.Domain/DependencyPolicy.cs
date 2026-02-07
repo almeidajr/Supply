@@ -5,6 +5,13 @@ namespace Supply.Wizard.Domain;
 /// </summary>
 public enum DependencyPolicy
 {
+    /// <summary>
+    /// Indicates managed.
+    /// </summary>
     Managed,
+
+    /// <summary>
+    /// Indicates external.
+    /// </summary>
     External,
 }
