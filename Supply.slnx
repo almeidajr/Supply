@@ -1,6 +1,9 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Supply.Api/Supply.Api.csproj" />
+    <Project Path="src/Supply.Edge.Agent/Supply.Edge.Agent.csproj" />
+    <Project Path="src/Supply.Edge.Collector/Supply.Edge.Collector.csproj" />
+    <Project Path="src/Supply.Edge.Processor/Supply.Edge.Processor.csproj" />
     <Project Path="src/Supply.Wizard/Supply.Wizard.csproj" />
   </Folder>
 </Solution>
