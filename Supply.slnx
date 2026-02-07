@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Supply.Api/Supply.Api.csproj" />
+    <Project Path="src/Supply.Wizard/Supply.Wizard.csproj" />
+  </Folder>
+</Solution>
