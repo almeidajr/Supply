@@ -7,6 +7,9 @@ using Supply.Api.Domain.Options;
 
 namespace Supply.Api.Application.Services;
 
+/// <summary>
+/// Resolves wizard binary and artifact downloads from release catalog and storage.
+/// </summary>
 public sealed class WizardDistributionService(
     IReleaseCatalogRepository releaseCatalogRepository,
     IArtifactStorage artifactStorage,
@@ -15,6 +18,16 @@ public sealed class WizardDistributionService(
 {
     private readonly SupplyApiOptions _supplyApiOptions = options.Value;
 
+    /// <summary>
+    /// Gets latest wizard binary metadata for a channel and platform.
+    /// </summary>
+    /// <param name="channel">Release channel.</param>
+    /// <param name="operatingSystem">Target operating system.</param>
+    /// <param name="architecture">Target architecture.</param>
+    /// <param name="baseUri">Optional absolute base URI used to construct download URI.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Latest wizard binary document, or <see langword="null"/> when no release exists.</returns>
     public async Task<WizardBinaryLatestDocument?> GetLatestWizardBinaryAsync(
         string channel,
         string operatingSystem,
@@ -59,6 +72,15 @@ public sealed class WizardDistributionService(
         };
     }
 
+    /// <summary>
+    /// Opens a specific wizard binary payload by version and platform.
+    /// </summary>
+    /// <param name="version">Wizard version.</param>
+    /// <param name="operatingSystem">Target operating system.</param>
+    /// <param name="architecture">Target architecture.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Artifact download result, or <see langword="null"/> when release is not found.</returns>
     public async Task<ArtifactDownloadResult?> OpenWizardBinaryAsync(
         string version,
         string operatingSystem,
@@ -93,6 +115,13 @@ public sealed class WizardDistributionService(
         return await OpenArtifactInternalAsync(artifact, cancellationToken);
     }
 
+    /// <summary>
+    /// Opens an artifact payload by identifier.
+    /// </summary>
+    /// <param name="artifactId">Artifact identifier.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Artifact download result, or <see langword="null"/> when artifact is not found.</returns>
     public async Task<ArtifactDownloadResult?> OpenArtifactAsync(
         string artifactId,
         CustomerContext customerContext,

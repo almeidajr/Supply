@@ -3,8 +3,19 @@ using Supply.Api.Domain.Contracts;
 
 namespace Supply.Api.Application.Services;
 
+/// <summary>
+/// Creates download ticket responses for requested wizard distribution resources.
+/// </summary>
 public sealed class DownloadTicketService(IWizardDistributionService wizardDistributionService) : IDownloadTicketService
 {
+    /// <summary>
+    /// Creates download links for requested ticket items.
+    /// </summary>
+    /// <param name="request">Download ticket request payload.</param>
+    /// <param name="baseUri">Optional absolute base URI used to build links.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Download ticket response containing generated links.</returns>
     public async Task<DownloadTicketResponse> CreateTicketsAsync(
         DownloadTicketRequest request,
         string? baseUri,

@@ -5,8 +5,18 @@ using Supply.Api.Domain.Options;
 
 namespace Supply.Api.Application.Services;
 
+/// <summary>
+/// Provides catalog and customer policy resolution helpers.
+/// </summary>
 public static class CatalogResolution
 {
+    /// <summary>
+    /// Resolves the effective customer policy from catalog and configured options.
+    /// </summary>
+    /// <param name="catalog">Catalog document.</param>
+    /// <param name="options">API options.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <returns>Resolved customer policy.</returns>
     public static CustomerPolicyDocument ResolveCustomerPolicy(
         CatalogDocument catalog,
         SupplyApiOptions options,
@@ -33,6 +43,13 @@ public static class CatalogResolution
         };
     }
 
+    /// <summary>
+    /// Resolves the manifest release identifier for a channel considering policy pinning.
+    /// </summary>
+    /// <param name="catalog">Catalog document.</param>
+    /// <param name="channel">Channel name.</param>
+    /// <param name="policy">Effective customer policy.</param>
+    /// <returns>Manifest release identifier.</returns>
     public static string ResolveManifestReleaseId(
         CatalogDocument catalog,
         string channel,
@@ -52,6 +69,13 @@ public static class CatalogResolution
         return channelPointer.ManifestReleaseId;
     }
 
+    /// <summary>
+    /// Resolves the wizard binary release identifier for a channel considering policy pinning.
+    /// </summary>
+    /// <param name="catalog">Catalog document.</param>
+    /// <param name="channel">Channel name.</param>
+    /// <param name="policy">Effective customer policy.</param>
+    /// <returns>Wizard binary release identifier.</returns>
     public static string ResolveWizardBinaryReleaseId(
         CatalogDocument catalog,
         string channel,
@@ -71,6 +95,13 @@ public static class CatalogResolution
         return channelPointer.WizardBinaryReleaseId;
     }
 
+    /// <summary>
+    /// Validates whether the customer can access a channel using current authentication and policy rules.
+    /// </summary>
+    /// <param name="options">API options.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="channel">Channel name.</param>
+    /// <param name="policy">Effective customer policy.</param>
     public static void ValidateAccess(
         SupplyApiOptions options,
         CustomerContext customerContext,

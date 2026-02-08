@@ -7,6 +7,9 @@ using Supply.Api.Domain.Options;
 
 namespace Supply.Api.Application.Services;
 
+/// <summary>
+/// Builds manifest responses from catalog releases and customer policy.
+/// </summary>
 public sealed class WizardManifestService(
     IReleaseCatalogRepository releaseCatalogRepository,
     IOptions<SupplyApiOptions> options
@@ -14,6 +17,13 @@ public sealed class WizardManifestService(
 {
     private readonly SupplyApiOptions _supplyApiOptions = options.Value;
 
+    /// <summary>
+    /// Gets a manifest for the requested channel and customer context.
+    /// </summary>
+    /// <param name="request">Manifest request.</param>
+    /// <param name="customerContext">Resolved customer context.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Manifest envelope when found.</returns>
     public async Task<ManifestEnvelope?> GetManifestAsync(
         ManifestRequest request,
         CustomerContext customerContext,
