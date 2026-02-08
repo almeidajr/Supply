@@ -8,8 +8,8 @@ namespace Supply.Wizard.Application.Steps;
 /// </summary>
 public sealed class InstallOrUpdateComponentStep(ComponentManifest component, ArtifactManifest artifact) : IPlanStep
 {
-    private string? installedPath;
-    private string? serviceName;
+    private string? _installedPath;
+    private string? _serviceName;
 
     /// <inheritdoc />
     public string Id => $"component.apply.{component.Id}";
@@ -43,58 +43,58 @@ public sealed class InstallOrUpdateComponentStep(ComponentManifest component, Ar
 
         var stateDirectoryPath =
             Path.GetDirectoryName(context.Request.StateFilePath) ?? Directory.GetCurrentDirectory();
-        installedPath = Path.Combine(stateDirectoryPath, "components", component.Id, component.Version);
-        Directory.CreateDirectory(installedPath);
+        _installedPath = Path.Combine(stateDirectoryPath, "components", component.Id, component.Version);
+        Directory.CreateDirectory(_installedPath);
 
-        var artifactDestinationPath = Path.Combine(installedPath, artifact.FileName);
+        var artifactDestinationPath = Path.Combine(_installedPath, artifact.FileName);
         File.Copy(downloadResult.FilePath, artifactDestinationPath, overwrite: true);
 
         var manifestExecutablePath = component.Service.ExecutablePath;
         var executablePath = Path.IsPathRooted(manifestExecutablePath)
             ? manifestExecutablePath
-            : Path.Combine(installedPath, manifestExecutablePath);
+            : Path.Combine(_installedPath, manifestExecutablePath);
 
-        serviceName = string.IsNullOrWhiteSpace(component.Service.ServiceName)
+        _serviceName = string.IsNullOrWhiteSpace(component.Service.ServiceName)
             ? component.Id
             : component.Service.ServiceName;
         var serviceDefinition = component.Service with
         {
-            ServiceName = serviceName,
+            ServiceName = _serviceName,
             DisplayName = string.IsNullOrWhiteSpace(component.Service.DisplayName)
                 ? component.DisplayName
                 : component.Service.DisplayName,
             ExecutablePath = executablePath,
             WorkingDirectoryPath = string.IsNullOrWhiteSpace(component.Service.WorkingDirectoryPath)
-                ? installedPath
+                ? _installedPath
                 : component.Service.WorkingDirectoryPath,
         };
 
         await context.ServiceManager.CreateOrUpdateAsync(serviceDefinition, cancellationToken);
-        await context.ServiceManager.StartAsync(serviceName, cancellationToken);
+        await context.ServiceManager.StartAsync(_serviceName, cancellationToken);
 
         context.State.Components[component.Id] = new InstalledComponentState
         {
             ComponentId = component.Id,
             Version = component.Version,
-            InstalledPath = installedPath,
-            ServiceName = serviceName,
+            InstalledPath = _installedPath,
+            ServiceName = _serviceName,
             InstalledAtUtc = DateTimeOffset.UtcNow,
         };
 
-        return StepResult.Success($"Component '{component.Id}' is installed at '{installedPath}'.");
+        return StepResult.Success($"Component '{component.Id}' is installed at '{_installedPath}'.");
     }
 
     /// <inheritdoc />
     public async Task RollbackAsync(StepContext context, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(serviceName) || string.IsNullOrWhiteSpace(installedPath))
+        if (string.IsNullOrWhiteSpace(_serviceName) || string.IsNullOrWhiteSpace(_installedPath))
         {
             return;
         }
 
         try
         {
-            await context.ServiceManager.StopAsync(serviceName, cancellationToken);
+            await context.ServiceManager.StopAsync(_serviceName, cancellationToken);
         }
         catch
         {
@@ -103,7 +103,7 @@ public sealed class InstallOrUpdateComponentStep(ComponentManifest component, Ar
 
         try
         {
-            await context.ServiceManager.DeleteAsync(serviceName, cancellationToken);
+            await context.ServiceManager.DeleteAsync(_serviceName, cancellationToken);
         }
         catch
         {
@@ -112,9 +112,9 @@ public sealed class InstallOrUpdateComponentStep(ComponentManifest component, Ar
 
         try
         {
-            if (Directory.Exists(installedPath))
+            if (Directory.Exists(_installedPath))
             {
-                Directory.Delete(installedPath, recursive: true);
+                Directory.Delete(_installedPath, recursive: true);
             }
         }
         catch

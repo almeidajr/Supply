@@ -1,4 +1,3 @@
-using Supply.Wizard.Application;
 using Supply.Wizard.Application.Abstractions;
 using Supply.Wizard.Domain;
 
@@ -79,8 +78,8 @@ internal sealed class NoOpProcessRunner : IProcessRunner
 internal sealed class SpyPlanStep(string id, bool isReversible, Func<StepResult> execute, Func<Task>? rollback = null)
     : IPlanStep
 {
-    private readonly Func<StepResult> executeAction = execute;
-    private readonly Func<Task> rollbackAction = rollback ?? (() => Task.CompletedTask);
+    private readonly Func<StepResult> _executeAction = execute;
+    private readonly Func<Task> _rollbackAction = rollback ?? (() => Task.CompletedTask);
 
     public int ExecuteCalls { get; private set; }
 
@@ -95,12 +94,12 @@ internal sealed class SpyPlanStep(string id, bool isReversible, Func<StepResult>
     public Task<StepResult> ExecuteAsync(StepContext context, CancellationToken cancellationToken)
     {
         ExecuteCalls++;
-        return Task.FromResult(executeAction());
+        return Task.FromResult(_executeAction());
     }
 
     public Task RollbackAsync(StepContext context, CancellationToken cancellationToken)
     {
         RollbackCalls++;
-        return rollbackAction();
+        return _rollbackAction();
     }
 }
