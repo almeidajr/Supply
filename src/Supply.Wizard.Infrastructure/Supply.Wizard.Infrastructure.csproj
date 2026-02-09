@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Supply.Wizard.Application\Supply.Wizard.Application.csproj" />
     <ProjectReference Include="..\Supply.Wizard.Domain\Supply.Wizard.Domain.csproj" />

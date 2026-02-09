@@ -9,6 +9,12 @@ namespace Supply.Wizard.Infrastructure.System.Services;
 /// </summary>
 public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServiceManager
 {
+    /// <summary>
+    /// Determines whether a Windows service exists.
+    /// </summary>
+    /// <param name="serviceName">Windows service name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><see langword="true"/> when the service exists; otherwise <see langword="false"/>.</returns>
     public async Task<bool> ExistsAsync(string serviceName, CancellationToken cancellationToken)
     {
         var result = await processRunner.RunAsync(
@@ -19,6 +25,11 @@ public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServi
         return result.Succeeded;
     }
 
+    /// <summary>
+    /// Creates a new Windows service or updates an existing one.
+    /// </summary>
+    /// <param name="definition">Service definition.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task CreateOrUpdateAsync(ServiceDefinition definition, CancellationToken cancellationToken)
     {
         var binPath = BuildBinPath(definition);
@@ -51,11 +62,19 @@ public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServi
         );
     }
 
-    public Task StartAsync(string serviceName, CancellationToken cancellationToken)
-    {
-        return RunCheckedAsync(["start", serviceName], cancellationToken);
-    }
+    /// <summary>
+    /// Starts the specified Windows service.
+    /// </summary>
+    /// <param name="serviceName">Windows service name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public Task StartAsync(string serviceName, CancellationToken cancellationToken) =>
+        RunCheckedAsync(["start", serviceName], cancellationToken);
 
+    /// <summary>
+    /// Stops the specified Windows service when it exists.
+    /// </summary>
+    /// <param name="serviceName">Windows service name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task StopAsync(string serviceName, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync(serviceName, cancellationToken))
@@ -69,6 +88,11 @@ public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServi
         );
     }
 
+    /// <summary>
+    /// Deletes the specified Windows service when it exists.
+    /// </summary>
+    /// <param name="serviceName">Windows service name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task DeleteAsync(string serviceName, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync(serviceName, cancellationToken))
@@ -82,6 +106,12 @@ public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServi
         );
     }
 
+    /// <summary>
+    /// Retrieves the runtime status of the specified Windows service.
+    /// </summary>
+    /// <param name="serviceName">Windows service name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Mapped service status.</returns>
     public async Task<ServiceStatus> GetStatusAsync(string serviceName, CancellationToken cancellationToken)
     {
         var result = await processRunner.RunAsync(
@@ -115,10 +145,7 @@ public sealed class WindowsServiceManager(IProcessRunner processRunner) : IServi
         return string.IsNullOrWhiteSpace(arguments) ? executablePath : $"{executablePath} {arguments}";
     }
 
-    private static string Quote(string value)
-    {
-        return value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
-    }
+    private static string Quote(string value) => value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
 
     private async Task RunCheckedAsync(IReadOnlyList<string> arguments, CancellationToken cancellationToken)
     {

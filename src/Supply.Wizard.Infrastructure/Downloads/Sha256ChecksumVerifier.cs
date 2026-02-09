@@ -9,6 +9,12 @@ namespace Supply.Wizard.Infrastructure.Downloads;
 /// </summary>
 public sealed class Sha256ChecksumVerifier : IChecksumVerifier
 {
+    /// <summary>
+    /// Verifies that the file content hash matches the expected SHA-256 value.
+    /// </summary>
+    /// <param name="filePath">Absolute path to the downloaded artifact file.</param>
+    /// <param name="expectedSha256">Expected SHA-256 digest in hexadecimal format.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task VerifySha256Async(string filePath, string expectedSha256, CancellationToken cancellationToken)
     {
         if (!File.Exists(filePath))
@@ -30,8 +36,6 @@ public sealed class Sha256ChecksumVerifier : IChecksumVerifier
         }
     }
 
-    private static string NormalizeHex(string hex)
-    {
-        return hex.Replace("-", string.Empty, StringComparison.Ordinal).Trim().ToLowerInvariant();
-    }
+    private static string NormalizeHex(string hex) =>
+        hex.Replace("-", string.Empty, StringComparison.Ordinal).Trim().ToLowerInvariant();
 }

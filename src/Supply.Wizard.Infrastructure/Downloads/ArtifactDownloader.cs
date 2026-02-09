@@ -11,6 +11,13 @@ namespace Supply.Wizard.Infrastructure.Downloads;
 /// </summary>
 public sealed class ArtifactDownloader(HttpClient httpClient) : IArtifactDownloader
 {
+    /// <summary>
+    /// Downloads an artifact to the local cache and returns the resolved local file path.
+    /// </summary>
+    /// <param name="artifact">Artifact metadata including source URI and checksum.</param>
+    /// <param name="context">Download context with cache path and transport settings.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Download result indicating local path and cache reuse state.</returns>
     public async Task<ArtifactDownloadResult> DownloadAsync(
         ArtifactManifest artifact,
         DownloadContext context,

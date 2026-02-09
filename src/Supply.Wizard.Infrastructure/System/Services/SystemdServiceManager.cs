@@ -18,6 +18,11 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
 
     private readonly string _unitDirectoryPath = DefaultUnitDirectoryPath;
 
+    /// <summary>
+    /// Creates a systemd manager with an explicit unit file directory.
+    /// </summary>
+    /// <param name="processRunner">Process runner used to invoke systemctl.</param>
+    /// <param name="unitDirectoryPath">Directory path where unit files are written.</param>
     public SystemdServiceManager(IProcessRunner processRunner, string unitDirectoryPath)
         : this(processRunner)
     {
@@ -26,6 +31,12 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
             : unitDirectoryPath;
     }
 
+    /// <summary>
+    /// Determines whether the service exists in systemd.
+    /// </summary>
+    /// <param name="serviceName">Service unit name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><see langword="true"/> when the service is present; otherwise <see langword="false"/>.</returns>
     public async Task<bool> ExistsAsync(string serviceName, CancellationToken cancellationToken)
     {
         var result = await processRunner.RunAsync(
@@ -41,6 +52,11 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
             && !string.Equals(result.StandardOutput.Trim(), "not-found", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Creates or updates the systemd unit file and enables the service.
+    /// </summary>
+    /// <param name="definition">Service definition.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task CreateOrUpdateAsync(ServiceDefinition definition, CancellationToken cancellationToken)
     {
         var unitFilePath = GetUnitFilePath(definition.ServiceName);
@@ -53,11 +69,19 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
         await RunCheckedAsync("systemctl", ["enable", definition.ServiceName], cancellationToken);
     }
 
-    public Task StartAsync(string serviceName, CancellationToken cancellationToken)
-    {
-        return RunCheckedAsync("systemctl", ["start", serviceName], cancellationToken);
-    }
+    /// <summary>
+    /// Starts the service via systemd.
+    /// </summary>
+    /// <param name="serviceName">Service unit name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public Task StartAsync(string serviceName, CancellationToken cancellationToken) =>
+        RunCheckedAsync("systemctl", ["start", serviceName], cancellationToken);
 
+    /// <summary>
+    /// Stops the service when it exists.
+    /// </summary>
+    /// <param name="serviceName">Service unit name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task StopAsync(string serviceName, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync(serviceName, cancellationToken))
@@ -68,6 +92,11 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
         await RunCheckedAsync("systemctl", ["stop", serviceName], cancellationToken);
     }
 
+    /// <summary>
+    /// Disables and removes a service unit when it exists.
+    /// </summary>
+    /// <param name="serviceName">Service unit name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task DeleteAsync(string serviceName, CancellationToken cancellationToken)
     {
         if (!await ExistsAsync(serviceName, cancellationToken))
@@ -89,6 +118,12 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
         await RunCheckedAsync("systemctl", ["daemon-reload"], cancellationToken);
     }
 
+    /// <summary>
+    /// Resolves current runtime status for the specified service.
+    /// </summary>
+    /// <param name="serviceName">Service unit name.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Mapped service status.</returns>
     public async Task<ServiceStatus> GetStatusAsync(string serviceName, CancellationToken cancellationToken)
     {
         var result = await processRunner.RunAsync(
@@ -141,20 +176,12 @@ public sealed class SystemdServiceManager(IProcessRunner processRunner) : IServi
             """;
     }
 
-    private static string EscapeArgument(string value)
-    {
-        return value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
-    }
+    private static string EscapeArgument(string value) =>
+        value.Contains(' ', StringComparison.Ordinal) ? $"\"{value}\"" : value;
 
-    private static string EscapeEnvironmentValue(string value)
-    {
-        return value.Replace("\"", "\\\"", StringComparison.Ordinal);
-    }
+    private static string EscapeEnvironmentValue(string value) => value.Replace("\"", "\\\"", StringComparison.Ordinal);
 
-    private string GetUnitFilePath(string serviceName)
-    {
-        return Path.Combine(_unitDirectoryPath, $"{serviceName}.service");
-    }
+    private string GetUnitFilePath(string serviceName) => Path.Combine(_unitDirectoryPath, $"{serviceName}.service");
 
     private async Task RunCheckedAsync(
         string fileName,

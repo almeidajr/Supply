@@ -17,6 +17,12 @@ public sealed class JsonStateStore : IStateStore, IDisposable
 
     private readonly SemaphoreSlim _gate = new(1, 1);
 
+    /// <summary>
+    /// Loads the wizard state snapshot from disk.
+    /// </summary>
+    /// <param name="stateFilePath">Path to the state JSON file.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Loaded state, or a new empty state when the file does not exist.</returns>
     public async Task<WizardState> LoadAsync(string stateFilePath, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken);
@@ -42,6 +48,12 @@ public sealed class JsonStateStore : IStateStore, IDisposable
         }
     }
 
+    /// <summary>
+    /// Persists the wizard state snapshot to disk using an atomic replace pattern.
+    /// </summary>
+    /// <param name="stateFilePath">Path to the state JSON file.</param>
+    /// <param name="state">State document to persist.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task SaveAsync(string stateFilePath, WizardState state, CancellationToken cancellationToken)
     {
         var directoryPath = Path.GetDirectoryName(stateFilePath) ?? Directory.GetCurrentDirectory();
@@ -65,6 +77,12 @@ public sealed class JsonStateStore : IStateStore, IDisposable
         }
     }
 
+    /// <summary>
+    /// Appends a journal entry to the JSON-lines journal file.
+    /// </summary>
+    /// <param name="journalFilePath">Path to the journal file.</param>
+    /// <param name="entry">Journal entry to append.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     public async Task AppendJournalAsync(
         string journalFilePath,
         JournalEntry entry,
@@ -87,6 +105,9 @@ public sealed class JsonStateStore : IStateStore, IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes synchronization primitives owned by this store.
+    /// </summary>
     public void Dispose()
     {
         _gate.Dispose();

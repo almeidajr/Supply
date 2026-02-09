@@ -10,6 +10,12 @@ namespace Supply.Wizard.Infrastructure.System.Processes;
 /// </summary>
 public sealed class ProcessRunner : IProcessRunner
 {
+    /// <summary>
+    /// Executes a process and captures exit code, standard output, and standard error.
+    /// </summary>
+    /// <param name="spec">Process specification.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Buffered process result.</returns>
     public async Task<ProcessResult> RunAsync(ProcessSpec spec, CancellationToken cancellationToken)
     {
         var command = Cli.Wrap(spec.FileName)

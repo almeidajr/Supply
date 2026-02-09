@@ -9,12 +9,10 @@ namespace Supply.Wizard.Infrastructure.Http;
 
 internal static class HttpClientBuilder
 {
-    public static bool RequiresDedicatedTransport(WizardAuthOptions authentication, WizardTlsOptions tls)
-    {
-        return !string.IsNullOrWhiteSpace(authentication.ClientCertificateFilePath)
-            || tls.AllowInsecureServerCertificate
-            || !string.IsNullOrWhiteSpace(tls.CustomCaCertificateFilePath);
-    }
+    public static bool RequiresDedicatedTransport(WizardAuthOptions authentication, WizardTlsOptions tls) =>
+        !string.IsNullOrWhiteSpace(authentication.ClientCertificateFilePath)
+        || tls.AllowInsecureServerCertificate
+        || !string.IsNullOrWhiteSpace(tls.CustomCaCertificateFilePath);
 
     public static async Task ApplyAuthenticationAsync(
         HttpRequestHeaders headers,

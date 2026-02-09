@@ -13,6 +13,12 @@ public sealed class HttpManifestClient(HttpClient httpClient) : IManifestClient
 {
     private static readonly JsonSerializerOptions SerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
+    /// <summary>
+    /// Fetches the wizard manifest from Supply.Api for the requested channel.
+    /// </summary>
+    /// <param name="query">Manifest query containing channel and transport/auth options.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Resolved manifest document.</returns>
     public async Task<ManifestDocument> GetManifestAsync(ManifestQuery query, CancellationToken cancellationToken)
     {
         var manifestUri = new Uri(
