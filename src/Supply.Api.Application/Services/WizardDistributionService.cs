@@ -89,7 +89,6 @@ public sealed class WizardDistributionService(
         CancellationToken cancellationToken
     )
     {
-        _ = customerContext;
         var catalog = await releaseCatalogRepository.GetCatalogAsync(cancellationToken);
         var matchingReleaseId = catalog
             .WizardBinaryReleases.Values.FirstOrDefault(release =>
@@ -128,7 +127,6 @@ public sealed class WizardDistributionService(
         CancellationToken cancellationToken
     )
     {
-        _ = customerContext;
         var catalog = await releaseCatalogRepository.GetCatalogAsync(cancellationToken);
         if (!catalog.Artifacts.TryGetValue(artifactId, out ArtifactDocument? artifact))
         {

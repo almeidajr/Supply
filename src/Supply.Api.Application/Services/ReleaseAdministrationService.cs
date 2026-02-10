@@ -39,7 +39,6 @@ public sealed class ReleaseAdministrationService(IReleaseCatalogRepository relea
         CancellationToken cancellationToken
     )
     {
-        _ = releaseId;
         return releaseCatalogRepository.PublishChannelPointerAsync(
             new PublishReleaseRequest
             {
