@@ -1,6 +1,7 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 using Serilog;
 using Supply.Api.Application.Abstractions;
 using Supply.Api.Application.Services;
@@ -127,6 +128,8 @@ app.UseSerilogRequestLogging();
 app.UseRateLimiter();
 
 app.MapOpenApi();
+app.MapScalarApiReference();
+
 app.MapHealthRoutes();
 app.MapWizardRoutes();
 app.MapInternalReleaseRoutes().AddEndpointFilter<InternalApiKeyEndpointFilter>();
