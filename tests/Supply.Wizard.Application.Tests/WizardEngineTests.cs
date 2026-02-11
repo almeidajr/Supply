@@ -197,7 +197,7 @@ public sealed class WizardEngineTests
             new StubPlanRunner((_, _, _) => Task.FromResult(new PlanExecutionResult { Succeeded = true }))
         );
 
-        _ = await engine.ExecuteAsync(request, CancellationToken.None);
+        await engine.ExecuteAsync(request, CancellationToken.None);
 
         Assert.NotNull(manifestClient.LastQuery);
         Assert.Equal(request.ApiBaseUri, manifestClient.LastQuery.ApiBaseUri);
@@ -243,9 +243,8 @@ public sealed class WizardEngineTests
             { "unexpected", WizardExitCode.UnexpectedFailure },
         };
 
-    private static WizardRequest CreateRequest()
-    {
-        return new WizardRequest
+    private static WizardRequest CreateRequest() =>
+        new()
         {
             Operation = OperationKind.Install,
             ApiBaseUri = new Uri("https://localhost:5001"),
@@ -253,21 +252,17 @@ public sealed class WizardEngineTests
             StateFilePath = Path.Combine(Path.GetTempPath(), "supply-tests", "state.json"),
             JournalFilePath = Path.Combine(Path.GetTempPath(), "supply-tests", "journal.jsonl"),
         };
-    }
 
-    private static ManifestDocument CreateManifest()
-    {
-        return new ManifestDocument { ManifestVersion = "test", PublishedAtUtc = DateTimeOffset.UtcNow };
-    }
+    private static ManifestDocument CreateManifest() =>
+        new() { ManifestVersion = "test", PublishedAtUtc = DateTimeOffset.UtcNow };
 
     private static ExecutionPlan CreatePlan(
         WizardRequest request,
         ManifestDocument manifest,
         WizardState state,
         IReadOnlyList<IPlanStep> steps
-    )
-    {
-        return new ExecutionPlan
+    ) =>
+        new()
         {
             RunId = Guid.NewGuid(),
             Operation = request.Operation,
@@ -277,11 +272,9 @@ public sealed class WizardEngineTests
             TargetState = state with { },
             Steps = steps,
         };
-    }
 
-    private static Exception CreateException(string failureKind)
-    {
-        return failureKind switch
+    private static Exception CreateException(string failureKind) =>
+        failureKind switch
         {
             "validation" => new WizardValidationException("validation"),
             "dependency" => new DependencyValidationException("dependency"),
@@ -289,7 +282,6 @@ public sealed class WizardEngineTests
             "api" => new ApiAccessException("api"),
             _ => new InvalidOperationException("unexpected"),
         };
-    }
 
     private sealed class StubManifestClient(Func<ManifestQuery, CancellationToken, Task<ManifestDocument>> handler)
         : IManifestClient

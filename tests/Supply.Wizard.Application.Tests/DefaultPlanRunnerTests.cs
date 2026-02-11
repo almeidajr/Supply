@@ -89,16 +89,14 @@ public sealed class DefaultPlanRunnerTests
         Assert.Contains(stateStore.Journals, entry => entry.EventType == "rollback_failed");
     }
 
-    private static DefaultPlanRunner CreateRunner(IStateStore stateStore)
-    {
-        return new DefaultPlanRunner(
+    private static DefaultPlanRunner CreateRunner(IStateStore stateStore) =>
+        new(
             new NoOpArtifactDownloader(),
             new NoOpChecksumVerifier(),
             stateStore,
             new NoOpServiceManager(),
             new NoOpProcessRunner()
         );
-    }
 
     private static ExecutionPlan CreatePlan(IReadOnlyList<IPlanStep> steps, WizardState initialState)
     {

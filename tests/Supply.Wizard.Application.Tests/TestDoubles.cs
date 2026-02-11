@@ -11,10 +11,8 @@ internal sealed class InMemoryStateStore : IStateStore
 
     public WizardState State { get; private set; } = new();
 
-    public Task<WizardState> LoadAsync(string stateFilePath, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(State);
-    }
+    public Task<WizardState> LoadAsync(string stateFilePath, CancellationToken cancellationToken) =>
+        Task.FromResult(State);
 
     public Task SaveAsync(string stateFilePath, WizardState state, CancellationToken cancellationToken)
     {
@@ -36,18 +34,13 @@ internal sealed class NoOpArtifactDownloader : IArtifactDownloader
         ArtifactManifest artifact,
         DownloadContext context,
         CancellationToken cancellationToken
-    )
-    {
-        return Task.FromResult(new ArtifactDownloadResult { FilePath = string.Empty, ReusedCachedFile = true });
-    }
+    ) => Task.FromResult(new ArtifactDownloadResult { FilePath = string.Empty, ReusedCachedFile = true });
 }
 
 internal sealed class NoOpChecksumVerifier : IChecksumVerifier
 {
-    public Task VerifySha256Async(string filePath, string expectedSha256, CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task VerifySha256Async(string filePath, string expectedSha256, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }
 
 internal sealed class NoOpServiceManager : IServiceManager
@@ -69,10 +62,8 @@ internal sealed class NoOpServiceManager : IServiceManager
 
 internal sealed class NoOpProcessRunner : IProcessRunner
 {
-    public Task<ProcessResult> RunAsync(ProcessSpec spec, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(new ProcessResult { ExitCode = 0 });
-    }
+    public Task<ProcessResult> RunAsync(ProcessSpec spec, CancellationToken cancellationToken) =>
+        Task.FromResult(new ProcessResult { ExitCode = 0 });
 }
 
 internal sealed class SpyPlanStep(string id, bool isReversible, Func<StepResult> execute, Func<Task>? rollback = null)

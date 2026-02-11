@@ -150,9 +150,8 @@ public sealed class DefaultPlanBuilderTests
         );
     }
 
-    private static WizardRequest CreateRequest(OperationKind operation, IReadOnlyList<string> targetComponents)
-    {
-        return new WizardRequest
+    private static WizardRequest CreateRequest(OperationKind operation, IReadOnlyList<string> targetComponents) =>
+        new()
         {
             Operation = operation,
             ApiBaseUri = new Uri("https://localhost:5001"),
@@ -161,30 +160,26 @@ public sealed class DefaultPlanBuilderTests
             JournalFilePath = Path.Combine(Path.GetTempPath(), "supply-tests", "journal.jsonl"),
             TargetComponentIds = targetComponents,
         };
-    }
 
     private static ManifestDocument CreateManifest(
         IReadOnlyList<ComponentManifest> components,
         IReadOnlyList<DependencyManifest> dependencies
-    )
-    {
-        return new ManifestDocument
+    ) =>
+        new()
         {
             ManifestVersion = "test",
             PublishedAtUtc = DateTimeOffset.UtcNow,
             Components = components,
             Dependencies = dependencies,
         };
-    }
 
     private static ComponentManifest CreateComponent(
         string id,
         string version,
         IReadOnlyList<string> dependencyIds,
         IReadOnlyList<string>? dependsOnComponentIds = null
-    )
-    {
-        return new ComponentManifest
+    ) =>
+        new()
         {
             Id = id,
             DisplayName = id,
@@ -200,7 +195,6 @@ public sealed class DefaultPlanBuilderTests
                 ExecutablePath = $"{id}.exe",
             },
         };
-    }
 
     private static ArtifactManifest CreateArtifact(string fileName)
     {
